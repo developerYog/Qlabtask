@@ -49,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() //added below line after UserDetailsService() method
                 .antMatchers("/api/v1/register", "/api/v1/login").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/articles/**").permitAll()
                 .antMatchers("/api/v1/get-profile").authenticated()
                 .antMatchers("/api/v1/articles/**").authenticated()
                 .anyRequest()

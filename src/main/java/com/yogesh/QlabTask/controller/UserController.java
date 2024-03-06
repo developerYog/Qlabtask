@@ -2,7 +2,7 @@ package com.yogesh.QlabTask.controller;
 
 import com.yogesh.QlabTask.payloads.JWTAuthResponse;
 import com.yogesh.QlabTask.payloads.LoginDto;
-import com.yogesh.QlabTask.payloads.SignUpDto;
+import com.yogesh.QlabTask.payloads.UserDto;
 import com.yogesh.QlabTask.service.UserService;
 import com.yogesh.QlabTask.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,17 +48,10 @@ public class UserController {
 
     //http://localhost:8080/api/v1/auth/registration
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody SignUpDto signUpDto) {
+    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto) {
 
-//        if(userRepository.existsByUsername(signUpDto.getUsername())){
-//            return new ResponseEntity<>("Username is already taken!", HttpStatus.BAD_REQUEST);
-//        }
-//
-//        if(userRepository.existsByEmail(signUpDto.getEmail())){
-//            return new ResponseEntity<>("Email is already taken!", HttpStatus.BAD_REQUEST);
-//        }
         try {
-            userService.createUser(signUpDto);
+            userService.createUser(userDto);
             return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>("User Creation Failed", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -66,16 +59,16 @@ public class UserController {
     }
 
     @GetMapping("/get-profile")
-    public ResponseEntity<SignUpDto> getProfile(HttpServletRequest request, Authentication authentication) {
+    public ResponseEntity<?> getProfile(HttpServletRequest request, Authentication authentication) {
         String token = jwtUtil.extractToken(request);
 
         if (token != null && jwtUtil.validateToken(token, (UserDetails) authentication.getPrincipal())) {
             String username = jwtUtil.extractUsername(token);
-            SignUpDto  userDto = userService.getUserProfile(username);
+            UserDto userDto = userService.getUserProfile(username);
             return new ResponseEntity<>(userDto, HttpStatus.OK);
         } else {
             // Handle unauthorized access
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Invalid Credential",HttpStatus.UNAUTHORIZED);
         }
     }
 }

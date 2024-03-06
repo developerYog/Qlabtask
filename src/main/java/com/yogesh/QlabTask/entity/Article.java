@@ -13,9 +13,12 @@ public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name="title", nullable=false)
+    @Column(name="title", nullable=false, unique = true)
     private String title;
     @Column(name="content", nullable=false)
     private String content;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 }

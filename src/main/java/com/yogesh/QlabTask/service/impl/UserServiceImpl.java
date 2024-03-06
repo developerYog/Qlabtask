@@ -2,7 +2,7 @@ package com.yogesh.QlabTask.service.impl;
 
 import com.yogesh.QlabTask.entity.Role;
 import com.yogesh.QlabTask.entity.User;
-import com.yogesh.QlabTask.payloads.SignUpDto;
+import com.yogesh.QlabTask.payloads.UserDto;
 import com.yogesh.QlabTask.repository.RoleRepository;
 import com.yogesh.QlabTask.repository.UserRepository;
 import com.yogesh.QlabTask.service.UserService;
@@ -27,14 +27,14 @@ public class UserServiceImpl implements UserService {
     private ModelMapper modelMapper;
 
     @Override
-    public SignUpDto createUser(SignUpDto signUpDto) {
+    public UserDto createUser(UserDto userDto) {
         // create user object
         User user = User.builder()
-                .name(signUpDto.getName())
-                .username(signUpDto.getUsername())
-                .email(signUpDto.getEmail())
-                .password(passwordEncoder.encode(signUpDto.getPassword()))
-                .about(signUpDto.getAbout())
+                .name(userDto.getName())
+                .username(userDto.getUsername())
+                .email(userDto.getEmail())
+                .password(passwordEncoder.encode(userDto.getPassword()))
+                .about(userDto.getAbout())
                 .build();
 
         Role roles = roleRepository.findByName("ROLE_USER").get();
@@ -47,20 +47,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SignUpDto getUserProfile(String username) {
+    public UserDto getUserProfile(String username) {
         User user = userRepository.findByUsernameOrEmail(username,username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        return modelMapper.map(user,SignUpDto.class);
+       return mapToDto(user);
+        // return modelMapper.map(user, UserDto.class);
     }
 
 
-    public SignUpDto mapToDto(User user){
-        SignUpDto newSignUpDto = new SignUpDto();
-        newSignUpDto.setName(user.getName());
-        newSignUpDto.setEmail(user.getEmail());
-        newSignUpDto.setUsername(user.getUsername());
-        newSignUpDto.setAbout(user.getAbout());
-        return newSignUpDto;
+    public UserDto mapToDto(User user){
+        UserDto newUserDto = new UserDto();
+        newUserDto.setName(user.getName());
+        newUserDto.setEmail(user.getEmail());
+        newUserDto.setUsername(user.getUsername());
+        newUserDto.setPassword("Hidden");
+        newUserDto.setAbout(user.getAbout());
+        return newUserDto;
     }
 
 }
